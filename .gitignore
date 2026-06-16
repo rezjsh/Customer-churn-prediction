@@ -216,3 +216,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Standard Python ignores
+*.py[cod]
+environment.yml
+# Data and Logs
+data/
+logs/
+# Models/Checkpoints
+checkpoints/
+models/
+# IDE files
+.vscode/
+.idea/
+# Jupyter
