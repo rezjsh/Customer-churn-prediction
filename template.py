@@ -73,7 +73,11 @@ files_to_create = [
     f"src/{PROJECT_SLUG}/constants/__init__.py",
     
     # Component/Pipeline Files
-    f"src/{PROJECT_SLUG}/components/data_ingestion.py",
+    f"src/{PROJECT_SLUG}/components/data_ingestion/__init__.py",
+    f"src/{PROJECT_SLUG}/components/data_ingestion/interface.py",
+    f"src/{PROJECT_SLUG}/components/data_ingestion/strategies.py",
+    f"src/{PROJECT_SLUG}/components/data_ingestion/factory.py",
+    f"src/{PROJECT_SLUG}/components/data_ingestion/orchestrator.py",
     f"src/{PROJECT_SLUG}/components/data_validation.py",
     f"src/{PROJECT_SLUG}/components/data_transformation.py",
     f"src/{PROJECT_SLUG}/components/model_trainer.py",
