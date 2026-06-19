@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 from box import ConfigBox
 import requests
 import yaml
-from src.utils.logging_setup import logger
+from src.customer_churn.utils.logging_setup import logger
 
 def read_yaml_file(file_path: str) -> ConfigBox:
     """
