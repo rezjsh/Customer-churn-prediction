@@ -1,0 +1,5 @@
+data_ingestion:
+  root_dir: data/raw
+  source_type: file
+  file_path: data/raw/Telco-Customer-Churn.csv
+  file_type: csv
