@@ -1,1 +1,4 @@
-key: value
+eda_params:
+  target_column: "Churn"
+  correlation_threshold: 0.75
+  outlier_method: "iqr"
