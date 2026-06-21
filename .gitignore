@@ -230,3 +230,6 @@ models/
 .vscode/
 .idea/
 # Jupyter
+
+# Artifacts from training, evaluation, etc.
+artifacts/ 
