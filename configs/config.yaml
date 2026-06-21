@@ -3,3 +3,14 @@ data_ingestion:
   source_type: file
   file_path: data/raw/Telco-Customer-Churn.csv
   file_type: csv
+
+data_eda:
+  root_dir: artifacts/data_eda
+  data_path: data/raw/Telco-Customer-Churn.csv
+  json_report_path: artifacts/data_eda/eda_report.json
+  text_report_path: artifacts/data_eda/eda_report.txt
+
+data_validation:
+  root_dir: artifacts/data_validation
+  unzip_data_dir: data/raw/Telco-Customer-Churn.csv # Path to the output of ingestion/EDA
+  STATUS_FILE: artifacts/data_validation/status.txt
