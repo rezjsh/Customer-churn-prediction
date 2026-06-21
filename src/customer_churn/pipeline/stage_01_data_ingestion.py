@@ -1,14 +1,12 @@
-from customer_churn.config.configuration import ConfigurationManager
 from customer_churn.components.data_ingestion import DataIngestion
 from customer_churn.utils.logging_setup import logger
 
 class DataIngestionTrainingPipeline:
-    def __init__(self):
-        pass
+    def __init__(self, config_manager):
+        self.config_manager = config_manager
 
-    def run(self):
-        config_manager = ConfigurationManager()
-        data_ingestion_config = config_manager.get_data_ingestion_config()
+    def run_pipeline(self):
+        data_ingestion_config = self.config_manager.get_data_ingestion_config()
         
         data_ingestion = DataIngestion(config=data_ingestion_config)
         raw_dataframe = data_ingestion.download_data()
