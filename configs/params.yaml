@@ -2,3 +2,59 @@ eda_params:
   target_column: "Churn"
   correlation_threshold: 0.75
   outlier_method: "iqr"
+
+Data_Preprocessing:
+  target_column: Churn
+  test_size: 0.2
+  random_state: 42
+  imputation_strategy: "median" # Options: "median", "mean", "mode"
+  numerical_features: ["tenure", "MonthlyCharges", "TotalCharges"]
+  categorical_features:
+    [
+      "gender",
+      "Partner",
+      "Dependents",
+      "PhoneService",
+      "MultipleLines",
+      "InternetService",
+      "OnlineSecurity",
+      "OnlineBackup",
+      "DeviceProtection",
+      "TechSupport",
+      "StreamingTV",
+      "StreamingMovies",
+      "Contract",
+      "PaperlessBilling",
+      "PaymentMethod",
+    ]
+
+Model_Trainer_Params:
+  target_column: Churn
+  models_to_train:
+    - name: "logistic_regression"
+      tune: true
+      param_grid:
+        C: [0.01, 0.1, 1.0, 10.0]
+        class_weight: ["balanced"] # Penalizes mistakes on minority class
+        max_iter: [1000]
+    - name: "random_forest"
+      tune: true
+      param_grid:
+        n_estimators: [100, 200, 300]
+        max_depth: [5, 8, 12]
+        class_weight: ["balanced", "balanced_subsample"]
+    - name: "xgboost"
+      tune: true
+      param_grid:
+        n_estimators: [100, 150, 250]
+        learning_rate: [0.01, 0.05, 0.1]
+        max_depth: [3, 5, 7]
+        scale_pos_weight: [3] # Assumes roughly a 1:3 churn minority ratio
+    - name: "svm"
+      tune: true
+      param_grid:
+        C: [0.1, 1, 10]
+        gamma: ["scale"]
+        kernel: ["rbf"]
+        # SVC wrapped in CalibratedClassifierCV doesn't pass class_weight directly via grid,
+        # so we keep its grid light or calibrate its base estimator instead.
