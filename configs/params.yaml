@@ -53,8 +53,8 @@ Model_Trainer_Params:
     - name: "svm"
       tune: true
       param_grid:
-        C: [0.1, 1, 10]
-        gamma: ["scale"]
-        kernel: ["rbf"]
+        estimator__C: [0.1, 1, 10]
+        estimator__gamma: ["scale"]
+        estimator__kernel: ["rbf"]
         # SVC wrapped in CalibratedClassifierCV doesn't pass class_weight directly via grid,
         # so we keep its grid light or calibrate its base estimator instead.
