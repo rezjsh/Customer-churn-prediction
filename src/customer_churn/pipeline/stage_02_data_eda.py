@@ -2,7 +2,7 @@ import pandas as pd
 from customer_churn.components.data_eda.visualizers import BivariateVisualizer, CorrelationHeatmapVisualizer, DistributionVisualizer
 from customer_churn.components.data_eda.orchestrator import ComprehensiveEDAReport
 from customer_churn.components.data_eda.analyzers import (
-    BivariateAnalyzer, OverviewAnalyzer, MissingDataAnalyzer, OutlierAnalyzer, TargetDistributionAnalyzer, UnivariateAnalyzer
+    BivariateAnalyzer, CardinalityAnalyzer, MulticollinearityAnalyzer, MutualInformationAnalyzer, OverviewAnalyzer, MissingDataAnalyzer, OutlierAnalyzer, TargetDistributionAnalyzer, UnivariateAnalyzer
 )
 from customer_churn.components.data_eda.strategies import TextReportStrategy, JsonReportStrategy
 from customer_churn.utils.logging_setup import logger
@@ -16,6 +16,14 @@ class DataEDAPipeline:
         
         # Load the data generated from Stage 01
         df = pd.read_csv(eda_config.data_path)
+
+        # 1. Clean TotalCharges (spaces to NaN, then float)
+        if 'TotalCharges' in df.columns:
+            df['TotalCharges'] = pd.to_numeric(df['TotalCharges'].replace(r'^\s*$', None, regex=True))
+
+        # 2. Drop unique identifiers to keep analyzers focused
+        if 'customerID' in df.columns:
+            df = df.drop(columns=['customerID'])
         
         # Initialize Orchestrator
         eda_engine = ComprehensiveEDAReport(config=eda_config)
@@ -27,6 +35,9 @@ class DataEDAPipeline:
                   .add_analyzer(TargetDistributionAnalyzer()) \
                   .add_analyzer(UnivariateAnalyzer()) \
                   .add_analyzer(BivariateAnalyzer()) \
+                  .add_analyzer(CardinalityAnalyzer()) \
+                  .add_analyzer(MulticollinearityAnalyzer()) \
+                  .add_analyzer(MutualInformationAnalyzer()) \
                   .add_analyzer(DistributionVisualizer()) \
                   .add_analyzer(CorrelationHeatmapVisualizer()) \
                   .add_analyzer(BivariateVisualizer())
