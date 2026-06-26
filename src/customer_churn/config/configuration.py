@@ -1,6 +1,6 @@
 from customer_churn.constants.constants import CONFIG_FILE_PATH, PARAMS_FILE_PATH, SCHEMA_FILE_PATH
 from customer_churn.utils.common import create_directory, read_yaml_file  
-from customer_churn.entity.config_entity import DataIngestionConfig, DataValidationConfig, EDAConfig
+from customer_churn.entity.config_entity import DataIngestionConfig, DataTransformationConfig, DataValidationConfig, EDAConfig, ModelEvaluationConfig, ModelTrainerConfig
 from pathlib import Path
 
 class ConfigurationManager:
@@ -48,4 +48,53 @@ class ConfigurationManager:
             STATUS_FILE=config.STATUS_FILE,
             unzip_data_dir=Path(config.unzip_data_dir),
             all_schema=schema,
+        )
+    
+    def get_data_transformation_config(self) -> DataTransformationConfig:
+        config = self.config.data_transformation
+        params = self.params.Data_Preprocessing
+        
+        dirs_to_create = [config.root_dir]
+        create_directory(dirs_to_create)
+
+        return DataTransformationConfig(
+            root_dir=Path(config.root_dir),
+            train_file_name=config.train_file_name,
+            test_file_name=config.test_file_name,
+            target_column=params.target_column,
+            test_size=float(params.test_size),
+            random_state=int(params.random_state),
+            imputation_strategy=str(params.imputation_strategy),
+            numerical_features=list(params.numerical_features),
+            categorical_features=list(params.categorical_features)
+        )
+    
+    def get_model_trainer_config(self) -> ModelTrainerConfig:
+        config = self.config.model_trainer
+        params = self.params.Model_Trainer_Params
+        
+        dirs_to_create = [config.root_dir, config.model_dir]
+        create_directory(dirs_to_create)
+        
+        return ModelTrainerConfig(
+            root_dir=Path(config.root_dir),
+            train_data_path=Path(config.train_data_path),
+            model_dir=Path(config.model_dir),
+            target_column=params.target_column,
+            models_to_train=list(params.models_to_train)
+        )
+    
+    def get_model_evaluation_config(self) -> ModelEvaluationConfig:
+        config = self.config.model_evaluation
+        params = self.params.Model_Trainer_Params
+        
+        dirs_to_create = [config.root_dir, config.model_dir]
+        create_directory(dirs_to_create)
+        
+        return ModelEvaluationConfig(
+            root_dir=Path(config.root_dir),
+            test_data_path=Path(config.test_data_path),
+            model_dir=Path(config.model_dir),
+            metric_file_name=Path(config.metric_file_name),
+            target_column=params.target_column
         )
