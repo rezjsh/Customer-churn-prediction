@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
+from sklearn.feature_selection import mutual_info_classif
+from sklearn.preprocessing import LabelEncoder
 from customer_churn.components.data_eda.interface import AnalysisComponent
 from customer_churn.utils.logging_setup import logger
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 
 
@@ -64,6 +67,22 @@ class CardinalityAnalyzer(AnalysisComponent):
         return {"cardinality": cardinality}
     
 
+
+class MulticollinearityAnalyzer(AnalysisComponent):
+    """Calculates VIF scores for continuous features."""
+    def analyze(self, df: pd.DataFrame, config) -> dict:
+        logger.info("Analyzing: Multicollinearity (VIF)")
+        numeric_df = df.select_dtypes(include=[np.number]).dropna()
+        
+        if numeric_df.shape[1] < 2:
+            return {"vif_scores": "Not enough numeric columns."}
+            
+        vif_data = {}
+        for i, col in enumerate(numeric_df.columns):
+            vif_data[col] = round(variance_inflation_factor(numeric_df.values, i), 2)
+            
+        return {"vif_scores": vif_data}
+
 class UnivariateAnalyzer(AnalysisComponent):
     """Analyzes single variables for statistical shape and central tendencies."""
     def analyze(self, df: pd.DataFrame, config) -> dict:
@@ -117,3 +136,29 @@ class BivariateAnalyzer(AnalysisComponent):
             bivariate_stats["categorical_vs_target_crosstab"] = cat_target_interactions
 
         return {"bivariate_analysis": bivariate_stats}
+    
+
+    
+
+class MutualInformationAnalyzer(AnalysisComponent):
+    """Measures non-linear relationships between variables and target."""
+    def analyze(self, df: pd.DataFrame, config) -> dict:
+        logger.info("Analyzing: Mutual Information Scores")
+        target = config.target_column
+        if target not in df.columns:
+            return {}
+
+        # Safe copy to encode strings safely
+        working_df = df.copy().dropna()
+        X = working_df.drop(columns=[target])
+        y = LabelEncoder().fit_transform(working_df[target])
+        
+        for col in X.select_dtypes(include=['object', 'category']).columns:
+            X[col] = LabelEncoder().fit_transform(X[col])
+            
+        mi_scores = mutual_info_classif(X, y, random_state=42)
+        mi_dict = {col: round(float(score), 4) for col, score in zip(X.columns, mi_scores)}
+        # Sort descending
+        sorted_mi = dict(sorted(mi_dict.items(), key=lambda item: item[1], reverse=True))
+        
+        return {"mutual_information_scores": sorted_mi}

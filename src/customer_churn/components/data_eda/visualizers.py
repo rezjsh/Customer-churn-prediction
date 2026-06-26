@@ -48,7 +48,7 @@ class BivariateVisualizer(AnalysisComponent):
         numeric_cols = [col for col in df.select_dtypes(include=['float64', 'int64']).columns if col != target]
         for col in numeric_cols:
             plt.figure(figsize=(8, 5))
-            sns.boxplot(data=df, x=target, y=col, palette="Set2")
+            sns.boxplot(data=df, x=target, y=col, hue=target, palette="Set2", legend=False)
             plt.title(f"{col} vs {target}")
             plt.savefig(os.path.join(plot_dir, f"boxplot_{col}_vs_{target}.png"), bbox_inches='tight')
             plt.close()
