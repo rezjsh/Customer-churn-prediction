@@ -4,12 +4,11 @@ from customer_churn.utils.logging_setup import logger
 import pandas as pd
 
 class DataValidationPipeline:
-    def __init__(self):
-        pass
+    def __init__(self, config_manager: ConfigurationManager):
+        self.config_manager = config_manager
 
     def run_pipeline(self, dataframe: pd.DataFrame) -> bool:
-        config_manager = ConfigurationManager()
-        data_validation_config = config_manager.get_data_validation_config()
+        data_validation_config = self.config_manager.get_data_validation_config()
         
         data_validation = DataValidation(config=data_validation_config)
         status = data_validation.validate_all(df=dataframe)
